@@ -269,6 +269,7 @@ kubectl logs $(kubectl get pod -l app=mihoyo -o jsonpath="{.items[0].metadata.na
 定时规则：2 2 28 * *
 白名单：ql_main.py
 依赖文件：error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloud_genshin|index|geetestServer
+文件后缀：py|html
 ```
 
 方式 2：指令拉取
