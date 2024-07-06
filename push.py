@@ -5,6 +5,7 @@ import base64
 import config
 import urllib
 import hashlib
+from datetime import datetime, timezone
 from request import http, get_new_session_use_proxy
 from loghelper import log
 from configparser import ConfigParser, NoOptionError
@@ -134,17 +135,18 @@ def wecom(send_title, push_message):
     }
     http.post(f'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={push_token}', json=push_data)
 
+
 # 企业微信机器人
 def wecomrobot(send_title, push_message):
     rep = http.post(
         url=f'{cfg.get("wecomrobot", "url")}',
         headers={"Content-Type": "application/json; charset=utf-8"},
         json={
-          "msgtype": "text",
-          "text": {
-              "content": send_title + "\r\n" + push_message,
-              "mentioned_mobile_list": [f'{cfg.get("wecomrobot", "mobile")}']
-          }
+            "msgtype": "text",
+            "text": {
+                "content": send_title + "\r\n" + push_message,
+                "mentioned_mobile_list": [f'{cfg.get("wecomrobot", "mobile")}']
+            }
         }
     ).json()
     log.info(f"推送结果：{rep.get('errmsg')}")
@@ -272,6 +274,60 @@ def qmsg(send_title, push_message):
     log.info(f"推送结果：{rep['reason']}")
 
 
+def discord(send_title, push_message):
+    import pytz
+    
+    rep = http.post(
+        url=f'{cfg.get("discord", "webhook")}',
+        headers={"Content-Type": "application/json; charset=utf-8"},
+        json={
+              "content": None,
+              "embeds": [
+                {
+                  "title": send_title,
+                  "description": push_message,
+                  "color": 1926125,
+                  "author": {
+                    "name": "MihoyoBBSTools",
+                    "url": "https://github.com/Womsxd/MihoyoBBSTools",
+                    "icon_url": "https://github.com/DGP-Studio/Snap.Hutao.Docs/blob/main/docs/.vuepress/public/images/202308/hoyolab-miyoushe-Icon.png?raw=true"
+                  },
+                  "timestamp": datetime.now(timezone.utc).astimezone(pytz.timezone('Asia/Shanghai')).isoformat()
+                }
+              ],
+            "username": "MihoyoBBSTools",
+            "avatar_url": "https://github.com/DGP-Studio/Snap.Hutao.Docs/blob/main/docs/.vuepress/public/images/202308/hoyolab-miyoushe-Icon.png?raw=true",
+            "attachments": []
+            }
+    )
+    if rep.status_code != 204:
+        log.warning(f"推送执行错误：{rep.text}")
+    else:
+        log.info(f"推送结果：HTTP {rep.status_code} Success")
+
+def wintoast(send_title, push_message):
+    try:
+        from win11toast import toast
+        toast(app_id="MihoyoBBSTools",title=send_title,body=push_message,icon='')
+    except:
+        log.error(f"请先pip install win11toast再使用win通知")
+
+# 推送消息中屏蔽关键词
+def msg_replace(msg):
+    block_keys = []
+    try:
+        block_str = cfg.get('setting', 'push_block_keys')
+        block_keys = block_str.split(',')
+    except:
+        return msg
+    else:
+        for block_key in block_keys:
+            block_key_trim = str(block_key).strip()
+            if block_key_trim:
+                msg = str(msg).replace(block_key_trim, "*" * len(block_key_trim))
+        return msg
+
+
 def push(status, push_message):
     if not load_config():
         return 1
@@ -287,7 +343,7 @@ def push(status, push_message):
         log.debug(f"推送所用的服务为: {func_name}")
         try:
             if not config.update_config_need:
-                func(title.get(status, ''), push_message)
+                func(msg_replace(title.get(status, '')), msg_replace(push_message))
             else:
                 func('「米游社脚本」config可能需要手动更新',
                      f'如果您多次收到此消息开头的推送，证明您运行的环境无法自动更新config，请手动更新一下，谢谢\r\n'
