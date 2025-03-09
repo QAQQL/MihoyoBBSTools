@@ -252,27 +252,28 @@ kubectl logs $(kubectl get pod -l app=mihoyo -o jsonpath="{.items[0].metadata.na
 定时类型：crontab
 定时规则：2 2 28 * *
 白名单：ql_main.py
-依赖文件：error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloudgames|os_cloudgames|index|geetestServer
+依赖文件：error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloudgames|os_cloudgames
 ```
 
 方式 2：指令拉取
 
 ```sh
-ql repo https://github.com/QAQQL/MihoyoBBSTools.git "ql_main.py" "" "error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloudgames|os_cloudgames|index|geetestServer
+ql repo https://github.com/QAQQL/MihoyoBBSTools.git "ql_main.py" "" "error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloudgames|os_cloudgames"
 ```
 
 ### 2.环境变量添加
 
 在青龙面板环境变量中添加以下变量
 
-| 名称                          | 值                | 功能                   |
-|-----------------------------|------------------|----------------------|
-| AutoMihoyoBBS_config_path   | /ql/data/config/ | 设置配置文件路径（必选）         |
-| AutoMihoyoBBS_config_multi  | 1                | 开启多用户（可选）            |
+| 名称                        | 值               | 功能                                   |
+| --------------------------- | ---------------- | -------------------------------------- |
+| AutoMihoyoBBS_config_path   | /ql/data/config/ | 设置配置文件路径（必选）               |
+| AutoMihoyoBBS_config_multi  | 1                | 开启多用户（可选）                     |
 | AutoMihoyoBBS_config_prefix | mhy_             | 自定义文件开头(单用户可选，多用户推荐) |
-| AutoMihoyoBBS_push_project  | 1                | 使用项目自带的Push，而不是青龙的   |
-| AutoMihoyoBBS_push_path     | /ql/data/config/ | 项目自带的推送配置文件路径        |
-| AutoMihoyoBBS_push_name     | push             | 项目自带的推送配置文件名         |
+| AutoMihoyoBBS_push_project  | 1                | 使用项目自带的Push，而不是青龙的       |
+| AutoMihoyoBBS_push_path     | /ql/data/config/ | 项目自带的推送配置文件路径             |
+| AutoMihoyoBBS_push_name     | push             | 项目自带的推送配置文件名               |
+| APIKEY_2CAPTCHA             |                  | 2CAPTCHA打码的apiKey                   |
 
 **注意！仅多用户需添加变量```AutoMihoyoBBS_config_multi```**
 
